@@ -21,5 +21,6 @@ All notable changes to DiskScope are documented here. The format follows [Keep a
 - Self-contained portable and per-user installer packaging with SHA-256 checksums.
 - Automated build, test, and tag-based release workflows.
 - Publication hygiene gates for secrets, machine-local paths, private commit metadata, and generated output.
+- Automated install, installed-app UI smoke test, and uninstall verification for release installers.
 
 [1.0.0]: https://github.com/pcalsys/DiskScope/releases/tag/v1.0.0

@@ -15,6 +15,7 @@ dotnet build DiskScope.sln -c Release --no-restore
 dotnet test DiskScope.sln -c Release --no-build
 ./scripts/check-publication.ps1 -CheckCommitEmails
 ./scripts/build-release.ps1 -Version 1.0.0
+./scripts/test-installer.ps1 -ReleaseDirectory artifacts/release/1.0.0 -Version 1.0.0
 ```
 
 On a machine whose Windows PowerShell execution policy blocks local scripts, invoke the reviewed script with `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\build-release.ps1 -Version 1.0.0`.
@@ -24,6 +25,8 @@ Extract the portable archive into a clean folder. Launch it, scan a synthetic tr
 Compare every downloadable file with `SHA256SUMS.txt`; `verify-release.ps1` also checks that the manifest agrees with the files and hashes.
 
 `check-publication.ps1` rejects credentials, personal user paths, private key material, generated output, and non-noreply release commit metadata. The release builder also fails if the published payload contains the repository path or the build account's user-profile path.
+
+`test-installer.ps1` installs the setup into an isolated temporary per-user directory, runs the installed application's UI smoke test, invokes the generated uninstaller, and verifies that the installed executable is removed.
 
 ## GitHub release
 
