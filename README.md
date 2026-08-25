@@ -33,9 +33,9 @@ Everything happens locally. DiskScope has no account, cloud service, telemetry, 
 
 ## Screenshots
 
-| Light overview (English) | Dark scan results (Deutsch) |
+| Light mode | Dark mode |
 |:--:|:--:|
-| ![DiskScope light overview](docs/assets/diskscope-overview-light.png) | ![DiskScope dark German scan results](docs/assets/diskscope-results-dark-de.png) |
+| ![DiskScope Overview in light mode](docs/assets/diskscope-overview-light.png) | ![DiskScope Overview in dark mode](docs/assets/diskscope-overview-dark.png) |
 
 All paths, files, drives, and sizes shown in these screenshots are synthetic.
 
