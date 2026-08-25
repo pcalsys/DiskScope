@@ -31,6 +31,14 @@ Everything happens locally. DiskScope has no account, cloud service, telemetry, 
 - Use the same hard-drive-and-magnifier artwork in the app, window, executable, installer, and desktop shortcut.
 - Handle inaccessible folders, disappearing files, long paths, and reparse points without failing the complete scan.
 
+## Screenshots
+
+| Light overview (English) | Dark scan results (Deutsch) |
+|:--:|:--:|
+| ![DiskScope light overview](docs/assets/diskscope-overview-light.png) | ![DiskScope dark German scan results](docs/assets/diskscope-results-dark-de.png) |
+
+All paths, files, drives, and sizes shown in these screenshots are synthetic.
+
 ## Download
 
 The v1.0.0 release provides two x64 downloads:
