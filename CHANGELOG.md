@@ -2,6 +2,14 @@
 
 All notable changes to DiskScope are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- A transparent one-click source builder that creates a tested portable build with checksums and an inspectable manifest.
+- Optional non-admin installation and safe removal of a separately identified source build.
+- A build-from-source guide with manual commands, security notes, and a code overview.
+
 ## [1.0.0] - 2026-08-25
 
 ### Added
@@ -23,4 +31,5 @@ All notable changes to DiskScope are documented here. The format follows [Keep a
 - Publication hygiene gates for secrets, machine-local paths, private commit metadata, and generated output.
 - Automated install, installed-app UI smoke test, and uninstall verification for release installers.
 
+[Unreleased]: https://github.com/pcalsys/DiskScope/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/pcalsys/DiskScope/releases/tag/v1.0.0

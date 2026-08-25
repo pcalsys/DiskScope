@@ -72,6 +72,20 @@ Requirements:
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - Inno Setup 6 only when building the installer
 
+### Easy source builder
+
+People who prefer not to trust or install a prebuilt executable can inspect the repository and build DiskScope locally. Double-click `Build-From-Source.cmd` to restore dependencies, compile the application, run the tests, check the output for machine-local paths, and create a self-contained portable folder and ZIP.
+
+An optional per-user source installation is also available and does not require administrator rights or the prebuilt setup package:
+
+```powershell
+.\Build-From-Source.cmd -Action Install
+```
+
+Remove only that source installation later with `Build-From-Source.cmd -Action Uninstall`. See the complete [build-from-source guide](docs/BUILD_FROM_SOURCE.md) for outputs, security details, manual commands, and a code overview.
+
+### Manual build
+
 ```powershell
 dotnet restore DiskScope.sln --locked-mode
 dotnet build DiskScope.sln -c Release --no-restore
@@ -101,6 +115,7 @@ src/DiskScope.Core/        Scanner, models, type and safety classification
 src/DiskScope/             WPF application, themes, settings, Windows actions
 tests/DiskScope.Tests/     Automated core behavior tests
 tools/                     Reproducible icon generation and UI-render checks
+Build-From-Source.cmd      One-click portable build or optional per-user source installation
 assets/source/             Transparent master artwork for generated app assets
 installer/                 Inno Setup definition
 scripts/                   Build, release, verification, and publication-hygiene automation

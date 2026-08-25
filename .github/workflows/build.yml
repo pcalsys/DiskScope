@@ -42,6 +42,10 @@ jobs:
       - name: Test
         run: dotnet test DiskScope.sln -c Release --no-build --nologo --logger "trx;LogFileName=tests.trx"
 
+      - name: Verify build-from-source install cycle
+        shell: cmd
+        run: Build-From-Source.cmd -Action Install -SkipTests -NoDesktopShortcut && Build-From-Source.cmd -Action Uninstall
+
       - name: Exercise WPF window and bindings
         shell: pwsh
         run: |
