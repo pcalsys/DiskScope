@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiskScope\DiskScope.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\src\DiskScope\Assets\DiskScopeLogo.png"
+             Link="Assets\DiskScopeLogo.png"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

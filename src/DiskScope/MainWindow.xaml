@@ -1,0 +1,399 @@
+<Window x:Class="DiskScope.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="clr-namespace:DiskScope.Core.Models;assembly=DiskScope.Core"
+        xmlns:vm="clr-namespace:DiskScope.ViewModels"
+        mc:Ignorable="d"
+        Title="DiskScope" Width="1440" Height="900" MinWidth="1080" MinHeight="680"
+        WindowStartupLocation="CenterScreen" Icon="Assets/DiskScope.ico">
+    <Grid Background="{DynamicResource WindowBackgroundBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="224" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Navigation -->
+        <Border Grid.Column="0" Background="{DynamicResource PanelBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
+            <Grid Margin="14,18">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="36" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="8,0">
+                    <Image Source="Assets/DiskScopeLogo.png" Width="40" Height="40" Stretch="Uniform" />
+                    <TextBlock Text="DiskScope" FontSize="18" FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="2">
+                    <Button x:Name="OverviewNavButton" Content="{DynamicResource NavOverview}" HorizontalContentAlignment="Left" Margin="0,2"
+                            Click="OverviewNav_Click" AutomationProperties.Name="{DynamicResource NavOverviewName}" />
+                    <Button x:Name="ResultsNavButton" Content="{DynamicResource NavResults}" HorizontalContentAlignment="Left" Margin="0,2"
+                            Click="ResultsNav_Click" AutomationProperties.Name="{DynamicResource NavResultsName}" />
+                    <Button x:Name="SettingsNavButton" Content="{DynamicResource NavSettings}" HorizontalContentAlignment="Left" Margin="0,2"
+                            Click="SettingsNav_Click" AutomationProperties.Name="{DynamicResource NavSettingsName}" />
+                    <Button x:Name="AboutNavButton" Content="{DynamicResource NavAbout}" HorizontalContentAlignment="Left" Margin="0,2"
+                            Click="AboutNav_Click" AutomationProperties.Name="{DynamicResource NavAboutName}" />
+                </StackPanel>
+
+                <Border Grid.Row="3" Background="{DynamicResource PanelAltBackgroundBrush}" CornerRadius="9" Padding="12" Margin="0,12,0,0">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource CreatedBy}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding VersionText}" Style="{StaticResource SecondaryText}" FontSize="11" Margin="0,3,0,10" />
+                        <TextBlock Text="{DynamicResource Language}" Style="{StaticResource SecondaryText}" FontSize="11" Margin="0,0,0,4" />
+                        <ComboBox ItemsSource="{Binding LanguageModes}" DisplayMemberPath="Label" SelectedValuePath="Language"
+                                  SelectedValue="{Binding Settings.Language, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectionChanged="Settings_Changed" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Overview -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto"
+                      Visibility="{Binding IsOverviewPage, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Margin="40,34,40,48" MaxWidth="1180" HorizontalAlignment="Left">
+                <TextBlock Text="{DynamicResource OverviewTitle}" Style="{StaticResource PageTitle}" />
+                <TextBlock Text="{DynamicResource OverviewSubtitle}"
+                           Style="{StaticResource SecondaryText}" FontSize="15" Margin="0,7,0,28" />
+
+                <Border Background="{DynamicResource PanelBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="12" Padding="24" Margin="0,0,0,24">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource ScanFolderTitle}" FontSize="18" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource ScanFolderDescription}"
+                                       Style="{StaticResource SecondaryText}" Margin="0,6,20,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="{DynamicResource ChooseFolder}" Style="{StaticResource PrimaryButton}"
+                                Click="ChooseFolder_Click" IsEnabled="{Binding CanStartScan}" MinWidth="140"
+                                AutomationProperties.Name="{DynamicResource ChooseFolderName}" />
+                    </Grid>
+                </Border>
+
+                <Grid Margin="0,0,0,14">
+                    <TextBlock Text="{DynamicResource AvailableDrives}" FontSize="18" FontWeight="SemiBold" />
+                    <Button Content="{DynamicResource Refresh}" HorizontalAlignment="Right" Padding="11,5" Click="RefreshDrives_Click" />
+                </Grid>
+
+                <ItemsControl ItemsSource="{Binding Drives}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Width="340" MinHeight="164" Margin="0,0,16,16" Padding="20"
+                                    CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
+                                    Background="{DynamicResource PanelBackgroundBrush}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid>
+                                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="16" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding DriveType, Converter={StaticResource DriveTypeNameConverter}}" HorizontalAlignment="Right" Style="{StaticResource SecondaryText}" />
+                                    </Grid>
+                                    <TextBlock Grid.Row="1" Style="{StaticResource SecondaryText}" Margin="0,10,0,7">
+                                        <TextBlock.Text>
+                                            <MultiBinding Converter="{StaticResource DriveUsageConverter}">
+                                                <Binding Path="UsedSpace" />
+                                                <Binding Path="TotalSize" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <ProgressBar Grid.Row="2" Minimum="0" Maximum="1" Value="{Binding UsedFraction, Mode=OneWay}" Margin="0,0,0,18" />
+                                    <Button Grid.Row="3" Content="{DynamicResource ScanDrive}" Tag="{Binding Name}" Click="ScanDrive_Click"
+                                            IsEnabled="{Binding IsReady}" HorizontalAlignment="Left" Padding="14,6" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Border Background="{DynamicResource SelectionBrush}" CornerRadius="10" Padding="18" Margin="0,12,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="ⓘ" Foreground="{DynamicResource AccentBrush}" FontSize="18" Margin="0,0,12,0" />
+                        <TextBlock Text="{DynamicResource SafetyDisclaimer}"
+                                   TextWrapping="Wrap" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Results -->
+        <Grid Grid.Column="1" Visibility="{Binding IsResultsPage, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Margin="32,28,32,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="{Binding StatusHeading}" Style="{StaticResource PageTitle}" />
+                    <TextBlock Text="{Binding StatusDetail}" Style="{StaticResource SecondaryText}" Margin="0,5,0,0" />
+                    <TextBlock Text="{Binding CurrentPath}" Style="{StaticResource SecondaryText}" FontSize="11" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                    <Button Content="{DynamicResource ChooseFolder}" Click="ChooseFolder_Click" IsEnabled="{Binding CanStartScan}" Margin="0,0,8,0" />
+                    <Button Content="{DynamicResource CancelScan}" Click="CancelScan_Click" IsEnabled="{Binding CanCancelScan}" Style="{StaticResource DangerButton}" />
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="32,0,32,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Style="{StaticResource MetricCard}">
+                    <StackPanel><TextBlock Text="{DynamicResource Files}" Style="{StaticResource SecondaryText}" /><TextBlock Text="{Binding FileCountText}" FontSize="20" FontWeight="SemiBold" Margin="0,4,0,0" /></StackPanel>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource MetricCard}">
+                    <StackPanel><TextBlock Text="{DynamicResource TotalSize}" Style="{StaticResource SecondaryText}" /><TextBlock Text="{Binding TotalSizeText}" FontSize="20" FontWeight="SemiBold" Margin="0,4,0,0" /></StackPanel>
+                </Border>
+                <Border Grid.Column="4" Style="{StaticResource MetricCard}">
+                    <StackPanel><TextBlock Text="{DynamicResource FoldersVisited}" Style="{StaticResource SecondaryText}" /><TextBlock Text="{Binding FolderCountText}" FontSize="20" FontWeight="SemiBold" Margin="0,4,0,0" /></StackPanel>
+                </Border>
+                <Border Grid.Column="6" Style="{StaticResource MetricCard}">
+                    <StackPanel><TextBlock Text="{DynamicResource SkippedUnavailable}" Style="{StaticResource SecondaryText}" /><TextBlock Text="{Binding SkippedCountText}" FontSize="20" FontWeight="SemiBold" Margin="0,4,0,0" /></StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="32,0,32,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="170" />
+                    <ColumnDefinition Width="150" />
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"
+                         ToolTip="{DynamicResource SearchToolTip}"
+                         AutomationProperties.Name="{DynamicResource SearchResultsName}" />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding SizeFilters}" SelectedItem="{Binding SelectedSizeFilter}"
+                          DisplayMemberPath="Label" Margin="0,0,10,0" AutomationProperties.Name="{DynamicResource MinimumSizeName}" />
+                <ComboBox Grid.Column="2" ItemsSource="{Binding CategoryFilters}" SelectedItem="{Binding SelectedCategoryFilter}"
+                          DisplayMemberPath="Label" AutomationProperties.Name="{DynamicResource CategoryName}" />
+            </Grid>
+
+            <Grid Grid.Row="3" Margin="32,0,32,28">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="330" />
+                </Grid.ColumnDefinitions>
+                <TabControl x:Name="ResultsTabControl" Background="Transparent" BorderThickness="0">
+                    <TabItem Header="{DynamicResource Files}">
+                        <Grid>
+                            <DataGrid ItemsSource="{Binding FilesView}" SelectedItem="{Binding SelectedFile}" AutoGenerateColumns="False"
+                                      Margin="0,8,12,0" MouseDoubleClick="FilesGrid_MouseDoubleClick"
+                                      AutomationProperties.Name="{DynamicResource ScannedFilesName}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{DynamicResource Name}" Binding="{Binding Name}" Width="170" SortMemberPath="Name" />
+                                    <DataGridTextColumn Header="{DynamicResource Size}" Binding="{Binding Size, Converter={StaticResource ByteSizeConverter}}" Width="90" SortMemberPath="Size" />
+                                    <DataGridTextColumn Header="{DynamicResource Location}" Binding="{Binding DirectoryPath}" Width="160" SortMemberPath="DirectoryPath" />
+                                    <DataGridTextColumn Header="{DynamicResource Type}" Binding="{Binding Extension, Converter={StaticResource FileTypeNameConverter}}" Width="100" SortMemberPath="TypeName" />
+                                    <DataGridTextColumn Header="{DynamicResource Modified}" Binding="{Binding ModifiedText}" Width="120" SortMemberPath="LastModified" />
+                                    <DataGridTextColumn Header="{DynamicResource Safety}" Binding="{Binding Safety, Converter={StaticResource SafetyTextConverter}, ConverterParameter=Title}" Width="130" SortMemberPath="SafetyCategory" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Text="{Binding VisibleCountText}" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                       Margin="0,0,26,10" Style="{StaticResource SecondaryText}" IsHitTestVisible="False" />
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="{DynamicResource LargestFolders}">
+                        <DataGrid ItemsSource="{Binding Folders}" SelectedItem="{Binding SelectedFolder}" AutoGenerateColumns="False"
+                                  Margin="0,8,12,0" MouseDoubleClick="FoldersGrid_MouseDoubleClick"
+                                  AutomationProperties.Name="{DynamicResource LargestFoldersName}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource Folder}" Binding="{Binding Name}" Width="180" SortMemberPath="Name" />
+                                <DataGridTextColumn Header="{DynamicResource Size}" Binding="{Binding Size, Converter={StaticResource ByteSizeConverter}}" Width="100" SortMemberPath="Size" />
+                                <DataGridTextColumn Header="{DynamicResource Files}" Binding="{Binding FileCount, StringFormat=N0}" Width="80" SortMemberPath="FileCount" />
+                                <DataGridTextColumn Header="{DynamicResource Location}" Binding="{Binding FullPath}" Width="410" SortMemberPath="FullPath" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+                </TabControl>
+
+                <!-- Safety sidebar -->
+                <Border Grid.Column="1" Background="{DynamicResource PanelBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="12" Padding="22" Margin="0,8,0,0">
+                    <Grid>
+                        <TextBlock Text="{DynamicResource SelectFilePrompt}"
+                                   TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryText}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasSelectedFile}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding HasSelectedFile, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource SafetyAssessment}" Style="{StaticResource SecondaryText}" FontSize="11" />
+                                <TextBlock Text="{Binding SelectedFile.Safety, Converter={StaticResource SafetyTextConverter}, ConverterParameter=Title}" FontSize="20" FontWeight="SemiBold" Margin="0,5,0,12">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedFile.Safety.Category}" Value="{x:Static models:SafetyCategory.CriticalSystem}"><Setter Property="Foreground" Value="{DynamicResource DangerBrush}" /></DataTrigger>
+                                                <DataTrigger Binding="{Binding SelectedFile.Safety.Category}" Value="{x:Static models:SafetyCategory.WindowsSystem}"><Setter Property="Foreground" Value="{DynamicResource DangerBrush}" /></DataTrigger>
+                                                <DataTrigger Binding="{Binding SelectedFile.Safety.Category}" Value="{x:Static models:SafetyCategory.ProgramFile}"><Setter Property="Foreground" Value="{DynamicResource WarningBrush}" /></DataTrigger>
+                                                <DataTrigger Binding="{Binding SelectedFile.Safety.Category}" Value="{x:Static models:SafetyCategory.Personal}"><Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" /></DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <TextBlock Text="{Binding SelectedFile.Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding SelectedFile.Size, Converter={StaticResource ByteSizeConverter}}" Style="{StaticResource SecondaryText}" Margin="0,3,0,0" />
+                                <TextBlock Text="{Binding SelectedFile.FullPath}" Style="{StaticResource SecondaryText}" TextWrapping="Wrap" Margin="0,3,0,16" FontSize="11" />
+
+                                <TextBlock Text="{DynamicResource WhatThisMeans}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding SelectedFile.Safety, Converter={StaticResource SafetyTextConverter}, ConverterParameter=Explanation}" TextWrapping="Wrap" Margin="0,6,0,16" LineHeight="20" />
+                                <TextBlock Text="{DynamicResource Recommendation}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding SelectedFile.Safety, Converter={StaticResource SafetyTextConverter}, ConverterParameter=Recommendation}" TextWrapping="Wrap" Margin="0,6,0,18" LineHeight="20" />
+
+                                <UniformGrid Columns="2" Rows="2" Margin="0,0,0,8">
+                                    <Button Content="{DynamicResource Open}" Click="OpenFile_Click" Margin="0,0,5,5" />
+                                    <Button Content="{DynamicResource ShowInExplorer}" Click="RevealFile_Click" Margin="5,0,0,5" />
+                                    <Button Content="{DynamicResource CopyPath}" Click="CopyPath_Click" Margin="0,5,5,0" />
+                                    <Button Content="{DynamicResource Properties}" Click="Properties_Click" Margin="5,5,0,0" />
+                                </UniformGrid>
+                                <Button Content="{DynamicResource MoveToRecycleBin}" Click="RecycleFile_Click" Style="{StaticResource DangerButton}"
+                                        IsEnabled="{Binding CanRecycleSelectedFile}" />
+                                <TextBlock Text="{DynamicResource ProtectedFile}"
+                                           Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" FontSize="11" Margin="0,8,0,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedFile.Safety.DeletionBlocked}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <ProgressBar Grid.RowSpan="4" VerticalAlignment="Top" IsIndeterminate="True"
+                         Visibility="{Binding IsScanning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </Grid>
+
+        <!-- Settings -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto"
+                      Visibility="{Binding IsSettingsPage, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Margin="40,34,40,48" Width="760" HorizontalAlignment="Left">
+                <TextBlock Text="{DynamicResource SettingsTitle}" Style="{StaticResource PageTitle}" />
+                <TextBlock Text="{DynamicResource SettingsSubtitle}" Style="{StaticResource SecondaryText}" Margin="0,6,0,26" />
+
+                <Border Style="{StaticResource SettingsCard}">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource Appearance}" FontSize="17" FontWeight="SemiBold" />
+                        <TextBlock Text="{DynamicResource Theme}" Style="{StaticResource SecondaryText}" Margin="0,15,0,5" />
+                        <ComboBox ItemsSource="{Binding ThemeModes}" DisplayMemberPath="Label" SelectedValuePath="Mode"
+                                  SelectedValue="{Binding Settings.Theme}" SelectionChanged="Settings_Changed"
+                                  Width="220" HorizontalAlignment="Left" />
+                        <TextBlock Text="{DynamicResource WindowsThemeHint}"
+                                   Style="{StaticResource SecondaryText}" FontSize="11" TextWrapping="Wrap" Margin="0,5,0,0" />
+                        <TextBlock Text="{DynamicResource FileSizeDisplay}" Style="{StaticResource SecondaryText}" Margin="0,15,0,5" />
+                        <ComboBox ItemsSource="{Binding SizeDisplayModes}" DisplayMemberPath="Label" SelectedValuePath="Mode"
+                                  SelectedValue="{Binding Settings.FileSizeDisplay}" SelectionChanged="Settings_Changed"
+                                  Width="260" HorizontalAlignment="Left" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource SettingsCard}">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource ScanningSettings}" FontSize="17" FontWeight="SemiBold" />
+                        <CheckBox Content="{DynamicResource IncludeHidden}" IsChecked="{Binding Settings.IncludeHiddenFiles}" Click="Settings_Changed" Margin="0,13,0,2" />
+                        <TextBlock Text="{DynamicResource HiddenHint}" Style="{StaticResource SecondaryText}" FontSize="11" Margin="22,0,0,7" />
+                        <CheckBox Content="{DynamicResource IncludeSystem}" IsChecked="{Binding Settings.IncludeSystemFiles}" Click="Settings_Changed" />
+                        <TextBlock Text="{DynamicResource SystemHint}"
+                                   Style="{StaticResource SecondaryText}" FontSize="11" TextWrapping="Wrap" Margin="22,0,0,7" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource SettingsCard}">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource FileActions}" FontSize="17" FontWeight="SemiBold" />
+                        <CheckBox Content="{DynamicResource ConfirmRecycle}" IsChecked="{Binding Settings.ConfirmBeforeRecycle}" Click="Settings_Changed" Margin="0,13,0,2" />
+                        <TextBlock Text="{DynamicResource HighRiskHint}" Style="{StaticResource SecondaryText}" FontSize="11" Margin="22,0,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource SelectionBrush}" CornerRadius="10" Padding="18">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource PrivacyPromise}" FontWeight="SemiBold" />
+                        <TextBlock Text="{DynamicResource PrivacyText}"
+                                   TextWrapping="Wrap" Margin="0,6,0,0" LineHeight="20" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- About -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto"
+                      Visibility="{Binding IsAboutPage, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Margin="40,34,40,48" Width="760" HorizontalAlignment="Left">
+                <TextBlock Text="{DynamicResource AboutTitle}" Style="{StaticResource PageTitle}" />
+                <Border Background="{DynamicResource PanelBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="12" Padding="28" Margin="0,24,0,18">
+                    <StackPanel>
+                        <Image Source="Assets/DiskScopeLogo.png" Width="96" Height="96" Stretch="Uniform" HorizontalAlignment="Left" />
+                        <TextBlock Text="DiskScope" FontSize="25" FontWeight="SemiBold" Margin="0,17,0,2" />
+                        <TextBlock Text="{Binding VersionText}" Style="{StaticResource SecondaryText}" />
+                        <TextBlock Text="{DynamicResource OverviewSubtitle}"
+                                   FontSize="15" Margin="0,18,0,8" />
+                        <TextBlock Text="{DynamicResource AboutDescription}"
+                                   Style="{StaticResource SecondaryText}" TextWrapping="Wrap" LineHeight="20" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource SettingsCard}">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <TextBlock Text="{DynamicResource License}" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="1" Text="MIT License" />
+                        <TextBlock Grid.Row="1" Text="{DynamicResource SourceCode}" FontWeight="SemiBold" Margin="0,15,0,0" />
+                        <Button Grid.Row="1" Grid.Column="1" Content="{DynamicResource OpenGitHub}" HorizontalAlignment="Left" Margin="0,10,0,0" Click="OpenGitHub_Click" />
+                        <TextBlock Grid.Row="2" Text="{DynamicResource Privacy}" FontWeight="SemiBold" Margin="0,15,0,0" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{DynamicResource NoDataLeaves}" Margin="0,15,0,0" />
+                    </Grid>
+                </Border>
+
+                <TextBlock Text="{DynamicResource AboutSafety}"
+                           Style="{StaticResource SecondaryText}" TextWrapping="Wrap" LineHeight="20" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

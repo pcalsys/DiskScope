@@ -1,0 +1,19 @@
+<Application x:Class="DiskScope.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:infra="clr-namespace:DiskScope.Infrastructure">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Light.xaml" />
+                <ResourceDictionary Source="Themes/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <infra:ByteSizeConverter x:Key="ByteSizeConverter" />
+            <infra:DriveUsageConverter x:Key="DriveUsageConverter" />
+            <infra:SafetyTextConverter x:Key="SafetyTextConverter" />
+            <infra:FileTypeNameConverter x:Key="FileTypeNameConverter" />
+            <infra:DriveTypeNameConverter x:Key="DriveTypeNameConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

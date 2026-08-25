@@ -1,0 +1,73 @@
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Check publication hygiene
+        shell: pwsh
+        run: ./scripts/check-publication.ps1
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore DiskScope.sln --locked-mode
+
+      - name: Verify formatting
+        run: dotnet format DiskScope.sln --verify-no-changes --no-restore --verbosity minimal
+
+      - name: Build
+        run: dotnet build DiskScope.sln -c Release --no-restore --nologo
+
+      - name: Test
+        run: dotnet test DiskScope.sln -c Release --no-build --nologo --logger "trx;LogFileName=tests.trx"
+
+      - name: Exercise WPF window and bindings
+        shell: pwsh
+        run: |
+          $pages = 'overview', 'results', 'settings', 'about'
+          foreach ($language in 'english', 'german') {
+            foreach ($theme in 'light', 'dark') {
+              foreach ($page in $pages) {
+                dotnet run --project tools/DiskScope.ScreenshotGenerator/DiskScope.ScreenshotGenerator.csproj -c Release --no-build -- "artifacts/ui-smoke-$language-$theme-$page.png" $theme $page $language
+                if ($LASTEXITCODE -ne 0) { throw "$language $theme-theme $page UI smoke render failed." }
+              }
+            }
+          }
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: test-results
+          path: tests/**/TestResults/*.trx
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload UI smoke render
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: ui-smoke-render
+          path: artifacts/ui-smoke-*.png
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,48 @@
+name: Bug report
+description: Report reproducible incorrect or broken DiskScope behavior.
+title: "[Bug]: "
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include private filenames, personal paths, credentials, or security vulnerabilities. Use the private security reporting process for unsafe deletion or security issues.
+  - type: input
+    id: version
+    attributes:
+      label: DiskScope version
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: Windows 11 24H2
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Use synthetic or redacted paths.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Installation type
+      options: [Installer, Portable, Built from source]
+    validations:
+      required: true

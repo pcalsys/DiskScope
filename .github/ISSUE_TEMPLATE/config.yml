@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security report
+    url: https://github.com/pcalsys/DiskScope/security/advisories/new
+    about: Report unsafe deletion, code execution, privilege, or privacy vulnerabilities privately.

@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Check publication hygiene
+        shell: pwsh
+        run: ./scripts/check-publication.ps1 -CheckCommitEmails
+
+      - name: Validate tag version
+        shell: pwsh
+        run: |
+          $version = '${{ github.ref_name }}'.TrimStart('v')
+          $project = [xml](Get-Content -Raw src/DiskScope/DiskScope.csproj)
+          if ($project.Project.PropertyGroup.Version -ne $version) {
+            throw "Tag version $version does not match project version $($project.Project.PropertyGroup.Version)."
+          }
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes --no-progress
+
+      - name: Build release artifacts
+        shell: pwsh
+        run: ./scripts/build-release.ps1 -Version $env:VERSION
+
+      - name: Verify checksums
+        shell: pwsh
+        run: ./scripts/verify-release.ps1 -ReleaseDirectory "artifacts/release/$env:VERSION"
+
+      - name: Upload workflow artifacts
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: DiskScope-${{ env.VERSION }}
+          path: |
+            artifacts/release/${{ env.VERSION }}/*.exe
+            artifacts/release/${{ env.VERSION }}/*.zip
+            artifacts/release/${{ env.VERSION }}/SHA256SUMS.txt
+            artifacts/release/${{ env.VERSION }}/release-manifest.json
+          if-no-files-found: error
+
+      - name: Publish GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $releaseRoot = "artifacts/release/$env:VERSION"
+          gh release create "v$env:VERSION" `
+            "$releaseRoot/DiskScope-$env:VERSION-win-x64-setup.exe" `
+            "$releaseRoot/DiskScope-$env:VERSION-win-x64-portable.zip" `
+            "$releaseRoot/SHA256SUMS.txt" `
+            "$releaseRoot/release-manifest.json" `
+            --verify-tag `
+            --title "DiskScope $env:VERSION" `
+            --notes-file RELEASE_NOTES.md

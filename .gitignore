@@ -1,0 +1,35 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Aa]rtifacts/
+[Tt]est[Rr]esults/
+*.user
+*.suo
+*.cache
+*.log
+
+# IDEs and OS files
+.vs/
+.vscode/
+.idea/
+.codex/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.bak
+*.orig
+
+# Local settings and signing material
+*.pfx
+*.p12
+*.snk
+.env
+.env.*
+!*.env.example
+secrets.json
+*.secrets.json
+
+# Packaging output
+installer/output/
+release/

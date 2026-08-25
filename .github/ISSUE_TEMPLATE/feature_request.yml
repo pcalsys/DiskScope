@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest a focused improvement to DiskScope.
+title: "[Feature]: "
+labels: [enhancement, needs-triage]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Explain the user need without including private filesystem data.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: safety
+    attributes:
+      label: Safety and privacy impact
+      description: Could this change affect file actions, classification, or local-only behavior?
+    validations:
+      required: true
