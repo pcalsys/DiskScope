@@ -17,6 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\DiskScope.ico" />
-    <Content Include="Assets\DiskScopeLogo.png" CopyToOutputDirectory="PreserveNewest" />
+    <Resource Include="Assets\DiskScopeLogo.png" />
   </ItemGroup>
 </Project>

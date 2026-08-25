@@ -9,9 +9,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\DiskScope\DiskScope.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\..\src\DiskScope\Assets\DiskScopeLogo.png"
-             Link="Assets\DiskScopeLogo.png"
-             CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
 </Project>

@@ -64,6 +64,13 @@ internal static class Program
             window.Show();
             window.UpdateLayout();
 
+            if (window.FindName("BrandLogoImage") is not Image { Source: BitmapSource logo }
+                || logo.PixelWidth <= 0
+                || logo.PixelHeight <= 0)
+            {
+                throw new InvalidOperationException("The DiskScope brand logo did not load.");
+            }
+
             var client = (FrameworkElement)window.Content;
             var width = Math.Max(1, (int)Math.Ceiling(client.ActualWidth));
             var height = Math.Max(1, (int)Math.Ceiling(client.ActualHeight));
