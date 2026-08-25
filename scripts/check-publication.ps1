@@ -87,7 +87,7 @@ try {
         $commitEmails = @(& git log --format='%ae%n%ce')
         if ($LASTEXITCODE -ne 0) { throw 'Could not inspect commit metadata.' }
         foreach ($email in $commitEmails | Sort-Object -Unique) {
-            if ($email -notmatch '(?i)@users\.noreply\.github\.com>?$') {
+            if ($email -notmatch '(?i)(?:@users\.noreply\.github\.com>?$|^noreply@github\.com$)') {
                 Add-Failure 'Commit metadata contains a non-noreply email' '(Git history)'
             }
         }
@@ -95,7 +95,7 @@ try {
         $taggerEmails = @(& git for-each-ref --format='%(taggeremail)' refs/tags)
         if ($LASTEXITCODE -ne 0) { throw 'Could not inspect tag metadata.' }
         foreach ($email in $taggerEmails | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique) {
-            if ($email -notmatch '(?i)@users\.noreply\.github\.com>?$') {
+            if ($email -notmatch '(?i)(?:@users\.noreply\.github\.com>?$|^noreply@github\.com$)') {
                 Add-Failure 'Tag metadata contains a non-noreply email' '(Git history)'
             }
         }
